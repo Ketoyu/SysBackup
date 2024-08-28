@@ -10,6 +10,11 @@
 *.userosscache
 *.sln.docstates
 
+#auxilary folders
+\[BACKUPS\]/
+\[compiled\]/
+\[auxiliary\]/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
