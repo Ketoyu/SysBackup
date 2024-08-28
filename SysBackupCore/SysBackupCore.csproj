@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <PublishUrl>publish\</PublishUrl>
+    <Nullable>enable</Nullable>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1416;CA1416</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1416;CA1416</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IOCL\IOCL.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="QuodLib.DateTimes">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.DateTimes\bin\Debug\net6.0\QuodLib.DateTimes.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.IO">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net6.0\QuodLib.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.Linq">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Linq\bin\Debug\net7.0\QuodLib.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.Strings">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Strings\bin\Debug\net6.0\QuodLib.Strings.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.WinForms">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms\bin\Debug\net7.0-windows7.0\QuodLib.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.WinForms.Drawing">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Drawing\bin\Debug\net7.0-windows\QuodLib.WinForms.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.WinForms.Linq">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Linq\bin\Debug\net7.0-windows\QuodLib.WinForms.Linq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

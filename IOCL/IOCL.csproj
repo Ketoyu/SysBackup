@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="QuodLib.IO">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net6.0\QuodLib.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="QuodLib.Strings">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Strings\bin\Debug\net6.0\QuodLib.Strings.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
