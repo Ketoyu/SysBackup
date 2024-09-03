@@ -1,5 +1,7 @@
 (c) At this time, all right reserved.
 
+This application features the copying and overwriting of files and directories. Use with caution and at your own risk.
+
 This solution references the following DLLs from [QuodLib](https://github.com/Ketoyu/QuodLib), which you'll likely have to re-link upon download in order to build the solution:
 - QuodLib.IO
 - QuodLib.Strings
