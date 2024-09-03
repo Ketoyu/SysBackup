@@ -143,10 +143,12 @@ namespace IOCL {
 
             IProgress<DirectoryInfo> finalDirectory = new Progress<DirectoryInfo>().OnChange((_, dI) => copy.Add(dI.FullName));
 
-            await IOTasks.TraverseFilesAsync(sources, file, error, cancel, new IOTasks.TraverseFilesAsyncOptions() {
-                SymbolicLink = symbolicLink,
-                LeafDirectory = finalDirectory,
-            }.SkipSubdirectories(skipSources));
+            await IOTasks.TraverseFilesAsync(sources, file, error, cancel,
+                new IOTasks.TraverseFilesAsyncOptions() {
+                    SymbolicLink = symbolicLink,
+                    LeafDirectory = finalDirectory,
+                }.SkipSubdirectories(skipSources)
+            );
 
             if (cancel.IsCancellationRequested)
                 return null;
