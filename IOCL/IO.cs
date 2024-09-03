@@ -94,6 +94,13 @@ namespace IOCL {
             }
         }
 
+        /// <summary>
+        /// Resolves the <paramref name="source"/> filepath minus the <paramref name="ignoreCommonPath"/> into the <paramref name="destination"/> directory.
+        /// </summary>
+        /// <param name="destination">The target directory</param>
+        /// <param name="source">The source filepath</param>
+        /// <param name="ignoreCommonPath">The path to trim from the <paramref name="source"/></param>
+        /// <returns>The updated destination</returns>
         public static string ResolvePath(string destination, string source, string? ignoreCommonPath) {
             string source_ = !string.IsNullOrEmpty(ignoreCommonPath) && source.StartsWith(ignoreCommonPath)
                 ? source.GetAfter(ignoreCommonPath)
@@ -136,7 +143,10 @@ namespace IOCL {
 
             IProgress<DirectoryInfo> finalDirectory = new Progress<DirectoryInfo>().OnChange((_, dI) => copy.Add(dI.FullName));
 
-            await IOTasks.TraverseFilesAsync(sources, skipSources, symbolicLink, file, finalDirectory, error, cancel);
+            await IOTasks.TraverseFilesAsync(sources, file, error, cancel, new IOTasks.TraverseFilesAsyncOptions() {
+                SymbolicLink = symbolicLink,
+                LeafDirectory = finalDirectory,
+            }.SkipSubdirectories(skipSources));
 
             if (cancel.IsCancellationRequested)
                 return null;
