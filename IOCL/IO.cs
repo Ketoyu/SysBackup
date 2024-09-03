@@ -2,6 +2,8 @@
 using Symbolic = QuodLib.IO.Symbolic.Info;
 using QuodLib.Strings;
 using QuodLib.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System;
 
 namespace IOCL {
     public static class IO {
@@ -37,6 +39,26 @@ namespace IOCL {
                 Working = true
             });
 
+            await CopyAsync(analysis!, itm => ResolvePath(destination, itm, commonPath), progress, error, cancel);
+
+            _ = cancelled();
+
+            //---- (local methods) ----
+
+            bool cancelled() {
+                if (cancel.IsCancellationRequested) {
+                    status.Report(new() {
+                        Status = "Canceled",
+                        Working = false
+                    });
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        private static async Task CopyAsync(Analysis analysis, Func<string, string> resolvePath, IProgress<ProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
             long sizeDestination = 0;
             long countDestination = 0;
             IProgress<long> pDest = new Progress<long>().OnChange((_, add) => {
@@ -56,7 +78,7 @@ namespace IOCL {
 
             //Copy folders & files
             await Parallel.ForEachAsync(analysis!.Paths.ToArray(), cancel, (itm, pcancel) => {
-                string dest = ResolvePath(destination, itm, commonPath);
+                string dest = resolvePath(itm);
                 bool isDir = File.GetAttributes(itm).HasFlag(FileAttributes.Directory);
                 try {
                     if (isDir)
@@ -76,22 +98,6 @@ namespace IOCL {
 
                 return ValueTask.CompletedTask;
             });
-
-            _ = cancelled();
-
-            //---- (local methods) ----
-
-            bool cancelled() {
-                if (cancel.IsCancellationRequested) {
-                    status.Report(new() {
-                        Status = "Canceled",
-                        Working = false
-                    });
-                    return true;
-                }
-
-                return false;
-            }
         }
 
         /// <summary>
