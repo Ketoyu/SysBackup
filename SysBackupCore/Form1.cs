@@ -23,6 +23,7 @@ using QuodLib.Linq;
 using IOCL;
 using QuodLib.IO;
 using QuodLib.WinForms.Linq.Extensions;
+using QuodLib.IO.Models;
 
 namespace SysBackup {
     public partial class Form1 : Form {
@@ -218,11 +219,11 @@ namespace SysBackup {
                     lblStat.Text = d.Status;
                     Controls_SetEnabled(!d.Working);
                 }),
-                new Progress<ProgressModel?>().OnChange((_, dn) => {
+                new Progress<IOProgressModel?>().OnChange((_, dn) => {
                     if (dn == null)
                         lblPrg.Text = $"Progress: ";
                     else {
-                        ProgressModel d = (ProgressModel)dn!;
+                        IOProgressModel d = (IOProgressModel)dn!;
                         lblPrg.Text = $"Progress: {d!.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
                     }
                 }),

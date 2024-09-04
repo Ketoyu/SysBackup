@@ -1,4 +1,5 @@
 ﻿using QuodLib.IO.Symbolic;
+using QuodLib.IO.Models;
 using Symbolic = QuodLib.IO.Symbolic.Info;
 using QuodLib.Strings;
 using QuodLib.IO;
@@ -7,7 +8,7 @@ using System;
 
 namespace IOCL {
     public static class IO {
-        public static async Task CopyAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, IProgress<StatModel> status, IProgress<ProgressModel?> progress, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        public static async Task CopyAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, IProgress<StatModel> status, IProgress<IOProgressModel?> progress, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
             if (!Directory.Exists(destination))
                 throw new ArgumentException($"Directory not found: {destination}", nameof(destination));
 
@@ -58,7 +59,7 @@ namespace IOCL {
             }
         }
 
-        private static async Task CopyAsync(Analysis analysis, Func<string, string> resolvePath, IProgress<ProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        private static async Task CopyAsync(Analysis analysis, Func<string, string> resolvePath, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
             long sizeDestination = 0;
             long countDestination = 0;
             IProgress<long> pDest = new Progress<long>().OnChange((_, add) => {
@@ -67,7 +68,7 @@ namespace IOCL {
             });
 
             IProgress<bool> pProg = new Progress<bool>().OnChange((_, success) => {
-                progress.Report(new ProgressModel {
+                progress.Report(new IOProgressModel {
                     SourceSize = analysis!.Size,
                     SourceCount = analysis!.Count,
                     CurrentSize = sizeDestination,
@@ -117,12 +118,6 @@ namespace IOCL {
 
             string final = Path.Combine(destination, source_);
             return final;
-        }
-
-        private sealed class Analysis {
-            public required IReadOnlyList<string> Paths { get; init; }
-            public required long Size { get; init; }
-            public required long Count { get; init; }
         }
 
         /// <summary>

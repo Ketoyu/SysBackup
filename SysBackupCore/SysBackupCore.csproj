@@ -55,7 +55,7 @@
       <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.DateTimes\bin\Debug\net6.0\QuodLib.DateTimes.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.IO">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net6.0\QuodLib.IO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net7.0\QuodLib.IO.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.Linq">
       <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Linq\bin\Debug\net7.0\QuodLib.Linq.dll</HintPath>
