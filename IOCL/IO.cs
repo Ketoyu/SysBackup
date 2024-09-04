@@ -28,7 +28,10 @@ namespace IOCL {
                 return;
             }
 
-            IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, itm => ResolvePath(destination, itm, commonPath), symbolicLink, error, cancel);
+            IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, 
+                itm => ResolvePath(destination, itm, commonPath), 
+                symbolicLink, error, cancel
+            );
 
             if (cancelled())
                 return;
