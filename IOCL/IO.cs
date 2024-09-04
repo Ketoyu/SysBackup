@@ -29,7 +29,7 @@ namespace IOCL {
             }
 
             IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, 
-                itm => ResolvePath(destination, itm, commonPath), 
+                itm => Files.ResolvePath(destination, itm, commonPath), 
                 symbolicLink, error, cancel
             );
 
@@ -58,24 +58,6 @@ namespace IOCL {
 
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Resolves the <paramref name="sourcePath"/> filepath minus the root drive or <paramref name="ignoreCommonDirectory"/>, into the <paramref name="targetDirectory"/>.
-        /// </summary>
-        /// <param name="targetDirectory">The target directory</param>
-        /// <param name="sourcePath">The source filepath</param>
-        /// <param name="ignoreCommonDirectory">The path to trim from the <paramref name="sourcePath"/></param>
-        /// <returns>The updated destination</returns>
-        public static string ResolvePath(string targetDirectory, string sourcePath, string? ignoreCommonDirectory) {
-            string partialSource = Path.GetRelativePath(
-                    !string.IsNullOrEmpty(ignoreCommonDirectory) && sourcePath.StartsWith(ignoreCommonDirectory)
-                        ? ignoreCommonDirectory
-                        : Path.GetPathRoot(sourcePath)!,
-                    sourcePath);
-
-            string final = Path.Combine(targetDirectory, partialSource);
-            return final;
         }
 
         /// <summary>
