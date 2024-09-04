@@ -108,7 +108,7 @@ namespace IOCL {
                 });
             });
 
-            IProgress<DirectoryInfo> finalDirectory = new Progress<DirectoryInfo>().OnChange((_, dI)
+            IProgress<DirectoryInfo> leafDirectory = new Progress<DirectoryInfo>().OnChange((_, dI)
                 => copy.Add(new DirectoryMapOperation() {
                     SourcePath = dI.FullName,
                     TargetPath = resolvePath(dI.FullName)
@@ -118,7 +118,7 @@ namespace IOCL {
             await IOTasks.TraverseFilesAsync(sources, file, error, cancel,
                 new IOTasks.TraverseFilesAsyncOptions() {
                     SymbolicLink = symbolicLink,
-                    LeafDirectory = finalDirectory,
+                    LeafDirectory = leafDirectory,
                 }.SkipSubdirectories(skipSources)
             );
 
