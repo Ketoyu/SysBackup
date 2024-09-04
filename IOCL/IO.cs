@@ -41,7 +41,7 @@ namespace IOCL {
                 Working = true
             });
 
-            await CopyAsync(analysis!, progress, error, cancel);
+            await analysis!.RunAsync(progress, error, cancel);
 
             _ = cancelled();
 
@@ -58,49 +58,6 @@ namespace IOCL {
 
                 return false;
             }
-        }
-
-        private static async Task CopyAsync(IOBulkOperation operations, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
-            long sizeDestination = 0;
-            long countDestination = 0;
-            IProgress<long> pDest = new Progress<long>().OnChange((_, add) => {
-                sizeDestination += add;
-                countDestination++;
-            });
-
-            IProgress<bool> pProg = new Progress<bool>().OnChange((_, success) => {
-                progress.Report(new IOProgressModel {
-                    SourceSize = operations!.Size,
-                    SourceCount = operations!.Count,
-                    CurrentSize = sizeDestination,
-                    CurrentCount = countDestination,
-                    Success = success
-                });
-            });
-
-            //Copy folders & files
-            await Parallel.ForEachAsync(operations!.Operations.ToArray(), cancel, (itm, pcancel) => {
-                try {
-                    itm.Run();
-                    if (itm is FileOperation opFile) {
-                        pDest.Report(new FileInfo(opFile.SourcePath).Length);
-                        //status.Report(new($"Copying: {cF.Filename_GetPath(itm)}", true));
-                    }
-
-                    pProg.Report(true);
-                } catch (Exception ex) {
-                    if (itm is DirectoryMapOperation opDir)
-                        error.Report(new(PathType.Folder, opDir.SourcePath, ex));
-                    else if (itm is FileOperation opFile)
-                        error.Report(new(PathType.File, opFile.SourcePath, ex));
-                    else
-                        throw new UnreachableException();
-
-                    pProg.Report(false);
-                }
-
-                return ValueTask.CompletedTask;
-            });
         }
 
         /// <summary>
