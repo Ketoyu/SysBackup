@@ -1,10 +1,7 @@
 ﻿using QuodLib.IO.Symbolic;
 using QuodLib.IO.Models;
-using Symbolic = QuodLib.IO.Symbolic.Info;
 using QuodLib.Strings;
 using QuodLib.IO;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System;
 using System.Diagnostics;
 
 namespace IOCL {
@@ -41,7 +38,7 @@ namespace IOCL {
                 Working = true
             });
 
-            await analysis!.RunAsync(progress, error, cancel);
+            await analysis!.RunParallelAsync(progress, error, cancel);
 
             _ = cancelled();
 
