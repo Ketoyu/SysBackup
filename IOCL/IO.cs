@@ -61,21 +61,20 @@ namespace IOCL {
         }
 
         /// <summary>
-        /// Resolves the <paramref name="source"/> filepath minus the <paramref name="ignoreCommonPath"/> into the <paramref name="destination"/> directory.
+        /// Resolves the <paramref name="sourcePath"/> filepath minus the <paramref name="ignoreCommonDirectory"/> into the <paramref name="targetDirectory"/> directory.
         /// </summary>
-        /// <param name="destination">The target directory</param>
-        /// <param name="source">The source filepath</param>
-        /// <param name="ignoreCommonPath">The path to trim from the <paramref name="source"/></param>
+        /// <param name="targetDirectory">The target directory</param>
+        /// <param name="sourcePath">The source filepath</param>
+        /// <param name="ignoreCommonDirectory">The path to trim from the <paramref name="sourcePath"/></param>
         /// <returns>The updated destination</returns>
-        public static string ResolvePath(string destination, string source, string? ignoreCommonPath) {
-            string source_ = !string.IsNullOrEmpty(ignoreCommonPath) && source.StartsWith(ignoreCommonPath)
-                ? source.GetAfter(ignoreCommonPath)
-                : source.FromIndex(3);
+        public static string ResolvePath(string targetDirectory, string sourcePath, string? ignoreCommonDirectory) {
+            string partialSource = Path.GetRelativePath(
+                    !string.IsNullOrEmpty(ignoreCommonDirectory) && sourcePath.StartsWith(ignoreCommonDirectory)
+                        ? ignoreCommonDirectory
+                        : Path.GetPathRoot(sourcePath)!,
+                    sourcePath);
 
-            if (source_[0] == '\\' || source_[0] == '/')
-                source_ = source_.Substring(1);
-
-            string final = Path.Combine(destination, source_);
+            string final = Path.Combine(targetDirectory, partialSource);
             return final;
         }
 
