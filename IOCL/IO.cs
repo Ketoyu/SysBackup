@@ -60,7 +60,7 @@ namespace IOCL {
             }
         }
 
-        private static async Task CopyAsync(IOBulkOperation analysis, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        private static async Task CopyAsync(IOBulkOperation operations, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
             long sizeDestination = 0;
             long countDestination = 0;
             IProgress<long> pDest = new Progress<long>().OnChange((_, add) => {
@@ -70,8 +70,8 @@ namespace IOCL {
 
             IProgress<bool> pProg = new Progress<bool>().OnChange((_, success) => {
                 progress.Report(new IOProgressModel {
-                    SourceSize = analysis!.Size,
-                    SourceCount = analysis!.Count,
+                    SourceSize = operations!.Size,
+                    SourceCount = operations!.Count,
                     CurrentSize = sizeDestination,
                     CurrentCount = countDestination,
                     Success = success
@@ -79,7 +79,7 @@ namespace IOCL {
             });
 
             //Copy folders & files
-            await Parallel.ForEachAsync(analysis!.Operations.ToArray(), cancel, (itm, pcancel) => {
+            await Parallel.ForEachAsync(operations!.Operations.ToArray(), cancel, (itm, pcancel) => {
                 try {
                     itm.Run();
                     if (itm is FileOperation opFile) {
