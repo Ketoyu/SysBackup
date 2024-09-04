@@ -61,7 +61,7 @@ namespace IOCL {
         }
 
         /// <summary>
-        /// Resolves the <paramref name="sourcePath"/> filepath minus the <paramref name="ignoreCommonDirectory"/> into the <paramref name="targetDirectory"/> directory.
+        /// Resolves the <paramref name="sourcePath"/> filepath minus the <paramref name="ignoreCommonDirectory"/> or root drive into the <paramref name="targetDirectory"/> directory.
         /// </summary>
         /// <param name="targetDirectory">The target directory</param>
         /// <param name="sourcePath">The source filepath</param>
