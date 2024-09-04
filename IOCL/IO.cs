@@ -5,6 +5,7 @@ using QuodLib.Strings;
 using QuodLib.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
+using System.Diagnostics;
 
 namespace IOCL {
     public static class IO {
@@ -30,7 +31,7 @@ namespace IOCL {
                 return;
             }
 
-            Analysis? analysis = await AnalyzeAsync(sources, skipSources, symbolicLink, error, cancel);
+            IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, itm => ResolvePath(destination, itm, commonPath), symbolicLink, error, cancel);
 
             if (cancelled())
                 return;
@@ -40,7 +41,7 @@ namespace IOCL {
                 Working = true
             });
 
-            await CopyAsync(analysis!, itm => ResolvePath(destination, itm, commonPath), progress, error, cancel);
+            await CopyAsync(analysis!, progress, error, cancel);
 
             _ = cancelled();
 
@@ -59,7 +60,7 @@ namespace IOCL {
             }
         }
 
-        private static async Task CopyAsync(Analysis analysis, Func<string, string> resolvePath, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        private static async Task CopyAsync(IOBulkOperation analysis, IProgress<IOProgressModel?> progress, IProgress<IOErrorModel> error, CancellationToken cancel) {
             long sizeDestination = 0;
             long countDestination = 0;
             IProgress<long> pDest = new Progress<long>().OnChange((_, add) => {
@@ -78,22 +79,23 @@ namespace IOCL {
             });
 
             //Copy folders & files
-            await Parallel.ForEachAsync(analysis!.Paths.ToArray(), cancel, (itm, pcancel) => {
-                string dest = resolvePath(itm);
-                bool isDir = File.GetAttributes(itm).HasFlag(FileAttributes.Directory);
+            await Parallel.ForEachAsync(analysis!.Operations.ToArray(), cancel, (itm, pcancel) => {
                 try {
-                    if (isDir)
-                        Directory.CreateDirectory(dest);
-                    else {
-                        Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-                        Files.File_CopyIfNewer(itm, dest);
-                        pDest.Report(new FileInfo(itm).Length);
+                    itm.Run();
+                    if (itm is FileOperation opFile) {
+                        pDest.Report(new FileInfo(opFile.SourcePath).Length);
                         //status.Report(new($"Copying: {cF.Filename_GetPath(itm)}", true));
                     }
 
                     pProg.Report(true);
                 } catch (Exception ex) {
-                    error.Report(new(isDir ? PathType.Folder : PathType.File, itm, ex));
+                    if (itm is DirectoryMapOperation opDir)
+                        error.Report(new(PathType.Folder, opDir.SourcePath, ex));
+                    else if (itm is FileOperation opFile)
+                        error.Report(new(PathType.File, opFile.SourcePath, ex));
+                    else
+                        throw new UnreachableException();
+
                     pProg.Report(false);
                 }
 
@@ -129,20 +131,32 @@ namespace IOCL {
         /// <param name="error">Reports an <see cref="IOErrorModel"/></param>
         /// <param name="cancel"></param>
         /// <returns></returns>
-        private async static Task<Analysis?> AnalyzeAsync(IList<string> sources, IList<string> skipSources, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
-            List<string> copy = [];
+        private async static Task<IOBulkOperation?> AnalyzeAsync(IList<string> sources, IList<string> skipSources, Func<string, string> resolvePath, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
+            List<IOOperation> copy = [];
 
             long size = 0;
             long count = 0;
 
             IProgress<FileInfo> file = new Progress<FileInfo>().OnChange((_, fI) => {
                 size += fI.Length;
-                copy.Add(fI.FullName);
-                if (!fI.Attributes.HasFlag(FileAttributes.Directory))
-                    count++;
+                if (fI.Attributes.HasFlag(FileAttributes.Directory))
+                    throw new UnreachableException();
+
+                count++;
+                copy.Add(new FileOperation() {
+                    SourcePath = fI.FullName,
+                    TargetPath = resolvePath(fI.FullName),
+                    Operation = FileOperationType.Copy,
+                    Overwrite = OverwriteOption.IfNewer
+                });
             });
 
-            IProgress<DirectoryInfo> finalDirectory = new Progress<DirectoryInfo>().OnChange((_, dI) => copy.Add(dI.FullName));
+            IProgress<DirectoryInfo> finalDirectory = new Progress<DirectoryInfo>().OnChange((_, dI)
+                => copy.Add(new DirectoryMapOperation() {
+                    SourcePath = dI.FullName,
+                    TargetPath = resolvePath(dI.FullName)
+                })
+            );
 
             await IOTasks.TraverseFilesAsync(sources, file, error, cancel,
                 new IOTasks.TraverseFilesAsyncOptions() {
@@ -154,11 +168,21 @@ namespace IOCL {
             if (cancel.IsCancellationRequested)
                 return null;
 
-            return new Analysis { 
-                Paths = copy,
+            return new IOBulkOperation { 
+                Operations = copy,
                 Size = size,
                 Count = count
             };
+        }
+
+        /// <summary>
+        /// Pending instruction to create a target directory based on a source directory.
+        /// </summary>
+        private sealed class DirectoryMapOperation : DirectoryCreateOperation {
+            /// <summary>
+            /// The source directory which was used to generate the target path.
+            /// </summary>
+            public required string SourcePath { get; init; }
         }
     }
 }
