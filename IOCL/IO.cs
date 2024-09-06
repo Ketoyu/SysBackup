@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace IOCL {
     public static class IO {
-        public static async Task CopyAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, IProgress<StatModel> status, IProgress<IOProgressModel?> progress, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        public static async Task CopyAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, IProgress<StatModel> status, IProgress<IOProgressModel> progress, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
             if (!Directory.Exists(destination))
                 throw new ArgumentException($"Directory not found: {destination}", nameof(destination));
 
@@ -17,8 +17,6 @@ namespace IOCL {
                 Status = "analyzing...",
                 Working = true
             });
-
-            progress.Report(null);
 
             if (cancel.IsCancellationRequested) {
                 status.Report(new() {

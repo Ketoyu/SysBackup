@@ -211,6 +211,7 @@ namespace SysBackup {
 
             string destination = txtDirBak.Text;
 
+            lblPrg.Text = "Progress: ";
             await IO.CopyAsync(destination,
                 txtPathIgnore.Text,
                 copy,
@@ -219,13 +220,8 @@ namespace SysBackup {
                     lblStat.Text = d.Status;
                     Controls_SetEnabled(!d.Working);
                 }),
-                new Progress<IOProgressModel?>().OnChange((_, dn) => {
-                    if (dn == null)
-                        lblPrg.Text = $"Progress: ";
-                    else {
-                        IOProgressModel d = (IOProgressModel)dn!;
-                        lblPrg.Text = $"Progress: {d!.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
-                    }
+                new Progress<IOProgressModel>().OnChange((_, d) => {
+                    lblPrg.Text = $"Progress: {d.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
                 }),
                 new Progress<SymbolicLink>().OnChange((_, d)
                     => symLinks.Add(d)),
