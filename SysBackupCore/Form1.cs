@@ -23,6 +23,7 @@ using IOCL;
 using QuodLib.IO;
 using QuodLib.WinForms.Linq;
 using QuodLib.IO.Models;
+using QuodLib.WinForms.IO;
 
 namespace SysBackup {
     public partial class Form1 : Form {
@@ -56,14 +57,14 @@ namespace SysBackup {
         }
 
         private void btnDir_Inc_Click(object sender, EventArgs e) {
-            FolderBrowserDialog fld = new();
-            if (fld.ShowDialog() == DialogResult.OK)
-                lvDir.Items.Add(MakeLine("+ " + fld.SelectedPath, "Folder"));
+            using FolderBrowserDialog fld = new();
+            if (fld.TryBrowse(out string? path))
+                lvDir.Items.Add(MakeLine($"+ {path!}", "Folder"));
         }
         private void btnDir_Dsc_Click(object sender, EventArgs e) {
-            FolderBrowserDialog fld = new();
-            if (fld.ShowDialog() == DialogResult.OK)
-                lvDir.Items.Add(MakeLine("- " + fld.SelectedPath, "Folder"));
+            using FolderBrowserDialog fld = new();
+            if (fld.TryBrowse(out string? path))
+                lvDir.Items.Add(MakeLine($"- {path!}", "Folder"));
         }
         private void btnDir_Forget_Click(object sender, EventArgs e) {
             if (lvDir.SelectedIndices.Count > 0)
@@ -79,16 +80,18 @@ namespace SysBackup {
         }
 
         private void mnu_tlExp_Click(object sender, EventArgs e) {
-            List<string> data = [];
-            if (!WinFiles.TryBrowse(new SaveFileDialog() {
+            using SaveFileDialog dialog = new() {
                 Title = "Select a backup preset",
                 InitialDirectory = DIR_IMP_EXP,
                 Filter = WinFiles.BuildExtensionFilter("Preset", ".bkps")
-            }, out string? file))
+            };
+            if (!dialog.TryBrowse(out string? file))
                 return;
 
-            foreach (ListViewItem itm in lvDir.Items)
-                data.Add(itm.SubItems[0].Text);
+            List<string> data = lvDir.Items
+                .AsEnumerable()
+                .Select(itm => itm.SubItems[0].Text)
+                .ToKnownList(lvDir.Items.Count);
 
             File.WriteAllText(file!, data.List_ToString());
         }
@@ -105,11 +108,12 @@ namespace SysBackup {
             lvDir.Items.Clear();
         }
         private void Import() {
-            if (!WinFiles.TryBrowse(new OpenFileDialog() {
+            using OpenFileDialog dialog = new() {
                 Title = "Select a backup preset",
                 InitialDirectory = DIR_IMP_EXP,
                 Filter = WinFiles.BuildExtensionFilter("Preset", ".bkps")
-            }, out string? file))
+            };
+            if (!dialog.TryBrowse(out string? file))
                 return;
 
             foreach (string ln in File.ReadAllText(file!).GetLines())
@@ -117,9 +121,9 @@ namespace SysBackup {
         }
 
         private void btnDirBak_Click(object sender, EventArgs e) {
-            FolderBrowserDialog fld = new FolderBrowserDialog();
-            if (fld.ShowDialog() == DialogResult.OK)
-                txtDirBak.Text = fld.SelectedPath;
+            using FolderBrowserDialog fld = new();
+            if (fld.TryBrowse(out string? path))
+                txtDirBak.Text = path!;
         }
 
         private void lvErr_MouseDoubleClick(object sender, MouseEventArgs e) {
