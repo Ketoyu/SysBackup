@@ -13,8 +13,7 @@ using QuodLib;
 
 using cG = QuodLib.WinForms.Drawing.classGraphics;
 
-using WinFiles = QuodLib.WinForms.Files;
-using Files = QuodLib.IO.Files;
+using WinFiles = QuodLib.WinForms.IO.Files;
 using Symbolic = QuodLib.IO.Symbolic.Info;
 using QuodLib.IO.Symbolic;
 
@@ -22,7 +21,7 @@ using QuodLib.Strings;
 using QuodLib.Linq;
 using IOCL;
 using QuodLib.IO;
-using QuodLib.WinForms.Linq.Extensions;
+using QuodLib.WinForms.Linq;
 using QuodLib.IO.Models;
 
 namespace SysBackup {
@@ -46,7 +45,7 @@ namespace SysBackup {
         readonly Color CLR_FL_B_NORM = cG.MColor(31);
         readonly Color CLR_FL_B_ERR = cG.CColor(57, 27, 27);
 
-        static readonly string DIR_DOC = Files.GetDir.Docs + @"\CodeGig\SysBackup";
+        static readonly string DIR_DOC = Directories.Special.Documents + @"\CodeGig\SysBackup";
         readonly string DIR_IMP_EXP = DIR_DOC + @"\Presets";
 
         private CancellationToken? Cancel { get; set; }
@@ -81,13 +80,17 @@ namespace SysBackup {
 
         private void mnu_tlExp_Click(object sender, EventArgs e) {
             List<string> data = [];
-            string fl = WinFiles.SaveFile("Preset (.bkps)", "bkps", "Select a backup preset", DIR_IMP_EXP);
-            if (fl == "") return;
+            if (!WinFiles.TryBrowse(new SaveFileDialog() {
+                Title = "Select a backup preset",
+                InitialDirectory = DIR_IMP_EXP,
+                Filter = WinFiles.BuildExtensionFilter("Preset", ".bkps")
+            }, out string? file))
+                return;
 
             foreach (ListViewItem itm in lvDir.Items)
                 data.Add(itm.SubItems[0].Text);
 
-            Files.TextFile_Overwrite(fl, data.List_ToString());
+            File.WriteAllText(file!, data.List_ToString());
         }
 
         private void mnuImp_tLRplc_Click(object sender, EventArgs e) {
@@ -102,10 +105,14 @@ namespace SysBackup {
             lvDir.Items.Clear();
         }
         private void Import() {
-            string fl = WinFiles.OpenFile("Preset (.bkps)", "bkps", "Select a backup preset", DIR_IMP_EXP);
-            if (fl == "") return;
+            if (!WinFiles.TryBrowse(new OpenFileDialog() {
+                Title = "Select a backup preset",
+                InitialDirectory = DIR_IMP_EXP,
+                Filter = WinFiles.BuildExtensionFilter("Preset", ".bkps")
+            }, out string? file))
+                return;
 
-            foreach (string ln in Files.TextFile_GetAllText(fl).GetLines())
+            foreach (string ln in File.ReadAllText(file!).GetLines())
                 lvDir.Items.Add(MakeLine(ln, "Folder"));
         }
 
@@ -246,13 +253,13 @@ namespace SysBackup {
                 }
 
                 if (errors.Any())
-                    Files.TextFile_Overwrite(
+                    File.WriteAllText(
                         filename("errors", ".log"),
                         errors.List_ToString()
                     );
 
                 if (unstopcp.Any())
-                    Files.TextFile_Overwrite(
+                    File.WriteAllText(
                         filename("retry", ".ucp"),
                         unstopcp.List_ToString()
                     );
@@ -260,9 +267,9 @@ namespace SysBackup {
 
             if (symbolicLinks.Any()) {
                 lblStat.Text = "Status: exporting list of symbolic links...";
-                Files.TextFile_Overwrite(
+                File.WriteAllText(
                     filename("symbolic links", ".log"),
-                    string.Join("\r\n", symbolicLinks!.Select(l => $"{l.SourceLocation}={l.Destination}"))
+                    string.Join("\r\n", symbolicLinks!.Select(l => $"{l.Source}={l.Target}"))
                 );
             }
 

@@ -69,6 +69,9 @@
     <Reference Include="QuodLib.WinForms.Drawing">
       <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Drawing\bin\Debug\net7.0-windows\QuodLib.WinForms.Drawing.dll</HintPath>
     </Reference>
+    <Reference Include="QuodLib.WinForms.IO">
+      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.IO\bin\Debug\net7.0-windows7.0\QuodLib.WinForms.IO.dll</HintPath>
+    </Reference>
     <Reference Include="QuodLib.WinForms.Linq">
       <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Linq\bin\Debug\net7.0-windows\QuodLib.WinForms.Linq.dll</HintPath>
     </Reference>

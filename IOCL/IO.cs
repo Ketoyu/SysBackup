@@ -27,7 +27,7 @@ namespace IOCL {
             }
 
             IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, 
-                itm => Files.ResolvePath(destination, itm, commonPath), 
+                itm => Paths.Resolve(destination, itm, commonPath), 
                 symbolicLink, error, cancel
             );
 
