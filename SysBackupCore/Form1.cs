@@ -89,7 +89,7 @@ namespace SysBackup {
                 return;
 
             List<string> data = lvDir.Items
-                .AsEnumerable()
+                .ToEnumerable()
                 .Select(itm => itm.SubItems[0].Text)
                 .ToKnownList(lvDir.Items.Count);
 
@@ -153,7 +153,7 @@ namespace SysBackup {
             if (txtDirBak.Text.Length > 0 && (
                 string.IsNullOrEmpty(txtPathIgnore.Text) ||
                 !lvDir.Items
-                    .AsEnumerable()
+                    .ToEnumerable()
                     .Select(i => i.SubItems[0].Text)
                     .All(s => s.StartsWith(txtPathIgnore.Text))
             )) {
@@ -166,7 +166,7 @@ namespace SysBackup {
                 return;
 
             List<string> items = lvDir.Items
-                .AsEnumerable()
+                .ToEnumerable()
                 .Select(i => i.SubItems[0].Text)
                 .ToKnownList(lvDir.Items.Count);
 
@@ -196,7 +196,7 @@ namespace SysBackup {
             List<SymbolicLink> symLinks = [];
 
             foreach (string itm in lvDir.Items
-                .AsEnumerable()
+                .ToEnumerable()
                 .Select(i => i.SubItems[0].Text)
             ) {
                 string dir = itm;
