@@ -45,7 +45,7 @@
             mnuImp_tlAppnd = new System.Windows.Forms.ToolStripMenuItem();
             mnu_tlExp = new System.Windows.Forms.ToolStripMenuItem();
             mnu_tlClr = new System.Windows.Forms.ToolStripMenuItem();
-            btnBak = new System.Windows.Forms.Button();
+            btnCopy = new System.Windows.Forms.Button();
             lblStat = new System.Windows.Forms.Label();
             txtDirBak = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
@@ -235,17 +235,17 @@
             mnu_tlClr.Text = "Clear";
             mnu_tlClr.Click += mnu_tlClr_Click;
             // 
-            // btnBak
+            // btnCopy
             // 
-            btnBak.BackColor = System.Drawing.SystemColors.Control;
-            btnBak.Location = new System.Drawing.Point(210, 58);
-            btnBak.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnBak.Name = "btnBak";
-            btnBak.Size = new System.Drawing.Size(102, 27);
-            btnBak.TabIndex = 16;
-            btnBak.Text = "RUN BACKUP";
-            btnBak.UseVisualStyleBackColor = false;
-            btnBak.Click += btnBak_Click;
+            btnCopy.BackColor = System.Drawing.SystemColors.Control;
+            btnCopy.Location = new System.Drawing.Point(210, 58);
+            btnCopy.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new System.Drawing.Size(102, 27);
+            btnCopy.TabIndex = 16;
+            btnCopy.Text = "RUN BACKUP";
+            btnCopy.UseVisualStyleBackColor = false;
+            btnCopy.Click += btnCopy_Click;
             // 
             // lblStat
             // 
@@ -348,7 +348,7 @@
             Controls.Add(txtDirBak);
             Controls.Add(label3);
             Controls.Add(lblStat);
-            Controls.Add(btnBak);
+            Controls.Add(btnCopy);
             Controls.Add(btnDir_Dsc);
             Controls.Add(btnDir_Forget);
             Controls.Add(btnDir_Inc);
@@ -390,7 +390,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuImp_tLRplc;
 		private System.Windows.Forms.ToolStripMenuItem mnuImp_tlAppnd;
 		private System.Windows.Forms.ToolStripMenuItem mnu_tlExp;
-		private System.Windows.Forms.Button btnBak;
+		private System.Windows.Forms.Button btnCopy;
 		private System.Windows.Forms.Label lblStat;
         private System.Windows.Forms.ToolStripMenuItem mnu_tlClr;
         private System.Windows.Forms.TextBox txtDirBak;

@@ -138,7 +138,7 @@ namespace SysBackup
         }
 
         private void Controls_SetEnabled(bool value) {
-            btnBak.Enabled = value;
+            btnCopy.Enabled = value;
             btnDirBak.Enabled = value;
 
             btnDir_Inc.Enabled = value;
@@ -150,7 +150,7 @@ namespace SysBackup
             txtPathIgnore.ReadOnly = !value;
             btnPathIgnore.Enabled = value;
         }
-        private async void btnBak_Click(object sender, EventArgs e) {
+        private async void btnCopy_Click(object sender, EventArgs e) {
             if (lvDir.Items.Count < 1)
                 return;
 
