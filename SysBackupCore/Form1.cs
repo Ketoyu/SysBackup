@@ -187,6 +187,8 @@ namespace SysBackup
         }
 
         private class CopyInput {
+            public required string Destination { get; init; }
+            public required string IgnorePath { get; init; }
             public List<string> Copy { get; }  = [];
             public List<string> Ignore { get; } = [];
             public List<SymbolicLink> SymbolicLinks { get; } = [];
@@ -201,7 +203,10 @@ namespace SysBackup
 
             Cancel ??= new();
 
-            CopyInput inputs = new();
+            CopyInput inputs = new() {
+                Destination = txtDirBak.Text,
+                IgnorePath = txtPathIgnore.Text
+            };
 
             foreach (string item in lvDir.Items
                 .ToEnumerable()
@@ -255,30 +260,25 @@ namespace SysBackup
             };
 
         private Task<Result<IOBulkOperation?>> DoAnalyzeAsync(CopyInput inputs, SharedProgress sharedProgress) {
-            string destination = txtDirBak.Text;
-
             AnalyzeProgress analyzeProgress = BuildAnalyzeProgress();
             analyzeProgress.SymbolicLink = new Progress<SymbolicLink>().OnChange((_, d)
                 => inputs.SymbolicLinks.Add(d));
 
             lblPrg.Text = "Progress: ";
 
-            return IO.AnalyzeAsync(txtDirBak.Text, txtPathIgnore.Text, inputs.Copy, inputs.Ignore, 
+            return IO.AnalyzeAsync(inputs.Destination, inputs.Destination, inputs.Copy, inputs.Ignore, 
                 sharedProgress, analyzeProgress, new CancellationToken());
         }
 
         private async Task DoCopyAsync(CopyInput inputs, IOBulkOperation operations, SharedProgress sharedProgress) {
-            string destination = txtDirBak.Text;
             CopyProgress copyProgress = BuildCopyProgress();
 
             await IO.CopyAsync(operations, sharedProgress, copyProgress, new CancellationToken());
 
-            Complete(destination, inputs.SymbolicLinks);
+            Complete(inputs.Destination, inputs.SymbolicLinks);
         }
 
         private async Task DoCopyImmediateAsync(CopyInput inputs, SharedProgress sharedProgress) {
-            string destination = txtDirBak.Text;
-
             AnalyzeProgress analyzeProgress = BuildAnalyzeProgress();
             analyzeProgress.SymbolicLink = new Progress<SymbolicLink>().OnChange((_, d)
                 => inputs.SymbolicLinks.Add(d));
@@ -287,8 +287,8 @@ namespace SysBackup
 
             lblPrg.Text = "Progress: ";
 
-            await IO.CopyImmediateAsync(destination,
-                txtPathIgnore.Text,
+            await IO.CopyImmediateAsync(inputs.Destination,
+                inputs.IgnorePath,
                 inputs.Copy,
                 inputs.Ignore,
                 sharedProgress,
@@ -297,7 +297,7 @@ namespace SysBackup
                 (CancellationToken)Cancel!
             );
 
-            Complete(destination, inputs.SymbolicLinks);
+            Complete(inputs.Destination, inputs.SymbolicLinks);
         }
 
         void Complete(string destination, List<SymbolicLink> symbolicLinks) {
