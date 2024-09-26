@@ -24,8 +24,12 @@ using QuodLib.IO;
 using QuodLib.WinForms.Linq;
 using QuodLib.IO.Models;
 using QuodLib.WinForms.IO;
+using IOCL.Models;
+using IOCL.Progress;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace SysBackup {
+namespace SysBackup
+{
     public partial class Form1 : Form {
         public Form1() {
             InitializeComponent();
@@ -182,66 +186,96 @@ namespace SysBackup {
                 txtPathIgnore.Text = items.First().TowardIndex((int)index!);
         }
 
-        private async Task DoCopyAsync() {
+        private class CopyInput {
+            public List<string> Copy { get; }  = [];
+            public List<string> Ignore { get; } = [];
+            public List<SymbolicLink> SymbolicLinks { get; } = [];
+        }
+
+
+        private CopyInput GetInputs() {
             lblStat.Text = "Status: processing...";
             Controls_SetEnabled(false);
 
             lvErr.Items.Clear();
 
-            List<string> copy = [];
-            List<string> ignore = [];
-
             Cancel ??= new();
 
-            List<SymbolicLink> symLinks = [];
+            CopyInput inputs = new();
 
-            foreach (string itm in lvDir.Items
+            foreach (string item in lvDir.Items
                 .ToEnumerable()
                 .Select(i => i.SubItems[0].Text)
             ) {
-                string dir = itm;
-                dir = dir.FromIndex(2);
+                string directory = item.FromIndex(2); //trim prefixes { "+ ", "- " }
 
                 try {
-                    if (Symbolic.TryGet(dir, out SymbolicLink? link) != SymbolicLinkType.None) {
-                        symLinks.Add(link!);
+                    if (Symbolic.TryGet(directory, out SymbolicLink? link) != SymbolicLinkType.None) {
+                        inputs.SymbolicLinks.Add(link!);
                         continue;
                     }
                 } catch (Exception ex) {
-                    AddErr("Folder", dir, ex.ToString());
+                    AddErr("Folder", directory, ex.ToString());
                     continue;
                 }
 
-                if (dir.StartsWith("- ")) {
-                    ignore.Add(dir);
+                if (directory.StartsWith("- ")) {
+                    inputs.Ignore.Add(directory);
                     continue;
                 }
 
-                copy.Add(dir);
+                inputs.Copy.Add(directory);
             }
 
-            string destination = txtDirBak.Text;
+            return inputs;
+        }
 
-            lblPrg.Text = "Progress: ";
-            await IO.CopyAsync(destination,
-                txtPathIgnore.Text,
-                copy,
-                ignore,
-                new Progress<StatModel>().OnChange((_, d) => {
+        private SharedProgress BuildSharedProgress()
+            => new() {
+                Status = new Progress<StatModel>().OnChange((_, d) => {
                     lblStat.Text = d.Status;
                     Controls_SetEnabled(!d.Working);
                 }),
-                new Progress<IOProgressModel>().OnChange((_, d) => {
+                Error = new Progress<IOErrorModel>().OnChange((_, d)
+                    => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString()))
+            };
+        private AnalyzeProgress BuildAnalyzeProgress()
+            => new() {
+                Details = new Progress<IOProgressModel>().OnChange((_, d) => {
+                    lblPrg.Text = $"Progress: _% (_/{d.SourceBytes}) | (_ of {d.SourceCount.ToCommaString()} files)";
+                })
+            };
+
+        private CopyProgress BuildCopyProgress()
+            => new() {
+                Details = new Progress<IOProgressModel>().OnChange((_, d) => {
                     lblPrg.Text = $"Progress: {d.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
-                }),
-                new Progress<SymbolicLink>().OnChange((_, d)
-                    => symLinks.Add(d)),
-                new Progress<IOErrorModel>().OnChange((_, d)
-                    => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString())),
+                })
+            };
+
+        private async Task<Result<IOBulkOperation?>> AnalyzeAsync() {
+
+        }
+
+        private async Task DoCopyAsync(CopyInput inputs, SharedProgress sharedProgress, AnalyzeProgress analyzeProgress, CopyProgress copyProgress) {
+            string destination = txtDirBak.Text;
+            
+            analyzeProgress.SymbolicLink = new Progress<SymbolicLink>().OnChange((_, d)
+                => inputs.SymbolicLinks.Add(d));
+
+            lblPrg.Text = "Progress: ";
+
+            await IO.CopyImmediateAsync(destination,
+                txtPathIgnore.Text,
+                inputs.Copy,
+                inputs.Ignore,
+                sharedProgress,
+                analyzeProgress,
+                copyProgress,
                 (CancellationToken)Cancel!
             );
 
-            Complete(destination, symLinks);
+            Complete(destination, inputs.SymbolicLinks);
         }
 
         void Complete(string destination, List<SymbolicLink> symbolicLinks) {

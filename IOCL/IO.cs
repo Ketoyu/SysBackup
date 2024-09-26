@@ -3,59 +3,137 @@ using QuodLib.IO.Models;
 using QuodLib.Strings;
 using QuodLib.IO;
 using System.Diagnostics;
+using System.Threading.Channels;
+using IOCL.Models;
+using IOCL.Progress;
 
-namespace IOCL {
+namespace IOCL
+{
     public static class IO {
-        public static async Task CopyAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, IProgress<StatModel> status, IProgress<IOProgressModel> progress, IProgress<SymbolicLink>? symbolicLink, IProgress<IOErrorModel> error, CancellationToken cancel) {
+        /// <summary>
+        /// Analyze and then immediately perform the backup.
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <param name="commonPath"></param>
+        /// <param name="sources"></param>
+        /// <param name="skipSources"></param>
+        /// <param name="status"></param>
+        /// <param name="progress"></param>
+        /// <param name="symbolicLink"></param>
+        /// <param name="error"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static async Task<ResultStatus> CopyImmediateAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, 
+            SharedProgress sharedProgress, AnalyzeProgress analyzeProgress, CopyProgress copyProgress, 
+            CancellationToken cancel
+        ) {
             if (!Directory.Exists(destination))
                 throw new ArgumentException($"Directory not found: {destination}", nameof(destination));
 
             if (!sources.Any())
                 throw new ArgumentException($"Empty list", nameof(sources));
 
-            status.Report(new() {
+            Result<IOBulkOperation?> analysis = await AnalyzeAsync(destination, commonPath, 
+                sources, skipSources, 
+                sharedProgress, analyzeProgress, 
+                cancel
+            );
+
+            if (analysis.Status == ResultStatus.Cancelled)
+                return ResultStatus.Cancelled;
+
+            ResultStatus result = await CopyAsync(analysis.Data!, sharedProgress, copyProgress, cancel);
+            return result;
+        }
+
+        /// <summary>
+        /// Analyze the data to be backed up.
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <param name="commonPath"></param>
+        /// <param name="sources"></param>
+        /// <param name="skipSources"></param>
+        /// <param name="sharedProgress"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static async Task<Result<IOBulkOperation?>> AnalyzeAsync(string destination, string commonPath, 
+            IList<string> sources, IList<string> skipSources,
+            SharedProgress sharedProgress, AnalyzeProgress analyzeProgress,
+            CancellationToken cancel
+        ) {
+            if (!Directory.Exists(destination))
+                throw new ArgumentException($"Directory not found: {destination}", nameof(destination));
+
+            if (!sources.Any())
+                throw new ArgumentException($"Empty list", nameof(sources));
+
+            sharedProgress.Status.Report(new() {
                 Status = "analyzing...",
                 Working = true
             });
 
             if (cancel.IsCancellationRequested) {
-                status.Report(new() {
+                sharedProgress.Status.Report(new() {
                     Status = "Canceled",
                     Working = false
                 });
-                return;
+                return new(null, ResultStatus.Cancelled);
             }
 
-            IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources, 
-                itm => Paths.Resolve(destination, itm, commonPath), 
-                symbolicLink, error, cancel
+            IOBulkOperation? analysis = await AnalyzeAsync(sources, skipSources,
+                itm => Paths.Resolve(destination, itm, commonPath),
+                analyzeProgress.SymbolicLink, sharedProgress.Error, cancel
             );
 
-            if (cancelled())
-                return;
+            if (CheckCancelled(sharedProgress.Status, cancel))
+                return new(null, ResultStatus.Cancelled);
 
-            status.Report(new() {
+            return new(analysis, ResultStatus.Complete);
+        }
+
+        /// <summary>
+        /// Perform a backup, using the provided <paramref name="analysis"/>.
+        /// </summary>
+        /// <param name="analysis"></param>
+        /// <param name="sharedProgress"></param>
+        /// <param name="copyProgress"></param>
+        /// <param name="error"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
+        public static async Task<ResultStatus> CopyAsync(IOBulkOperation analysis, SharedProgress sharedProgress, CopyProgress copyProgress,
+            CancellationToken cancel
+        ) {
+            sharedProgress.Status.Report(new() {
                 Status = "Copying...",
                 Working = true
             });
 
-            await analysis!.RunParallelAsync(progress, error, cancel);
+            await analysis!.RunParallelAsync(copyProgress.Details, sharedProgress.Error, cancel);
 
-            _ = cancelled();
+            bool cancelled = CheckCancelled(sharedProgress.Status, cancel);
+            return cancelled
+                ? ResultStatus.Cancelled
+                : ResultStatus.Complete;
+        }
 
-            //---- (local methods) ----
-
-            bool cancelled() {
-                if (cancel.IsCancellationRequested) {
-                    status.Report(new() {
-                        Status = "Canceled",
-                        Working = false
-                    });
-                    return true;
-                }
-
-                return false;
+        /// <summary>
+        /// Report (public) whether the operation was cancelled, then return true/false of that (private).
+        /// </summary>
+        /// <param name="status">The public-facing status</param>
+        /// <param name="cancel"></param>
+        /// <returns>The private status</returns>
+        private static bool CheckCancelled(IProgress<StatModel> status, CancellationToken cancel) {
+            if (cancel.IsCancellationRequested) {
+                status.Report(new() {
+                    Status = "Canceled",
+                    Working = false
+                });
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
