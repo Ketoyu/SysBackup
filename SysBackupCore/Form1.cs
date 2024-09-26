@@ -239,6 +239,7 @@ namespace SysBackup
                 Error = new Progress<IOErrorModel>().OnChange((_, d)
                     => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString()))
             };
+
         private AnalyzeProgress BuildAnalyzeProgress()
             => new() {
                 Details = new Progress<IOProgressModel>().OnChange((_, d) => {
@@ -253,15 +254,36 @@ namespace SysBackup
                 })
             };
 
-        private async Task<Result<IOBulkOperation?>> AnalyzeAsync() {
-
-        }
-
-        private async Task DoCopyAsync(CopyInput inputs, SharedProgress sharedProgress, AnalyzeProgress analyzeProgress, CopyProgress copyProgress) {
+        private Task<Result<IOBulkOperation?>> DoAnalyzeAsync(CopyInput inputs, SharedProgress sharedProgress) {
             string destination = txtDirBak.Text;
-            
+
+            AnalyzeProgress analyzeProgress = BuildAnalyzeProgress();
             analyzeProgress.SymbolicLink = new Progress<SymbolicLink>().OnChange((_, d)
                 => inputs.SymbolicLinks.Add(d));
+
+            lblPrg.Text = "Progress: ";
+
+            return IO.AnalyzeAsync(txtDirBak.Text, txtPathIgnore.Text, inputs.Copy, inputs.Ignore, 
+                sharedProgress, analyzeProgress, new CancellationToken());
+        }
+
+        private async Task DoCopyAsync(CopyInput inputs, IOBulkOperation operations, SharedProgress sharedProgress) {
+            string destination = txtDirBak.Text;
+            CopyProgress copyProgress = BuildCopyProgress();
+
+            await IO.CopyAsync(operations, sharedProgress, copyProgress, new CancellationToken());
+
+            Complete(destination, inputs.SymbolicLinks);
+        }
+
+        private async Task DoCopyImmediateAsync(CopyInput inputs, SharedProgress sharedProgress) {
+            string destination = txtDirBak.Text;
+
+            AnalyzeProgress analyzeProgress = BuildAnalyzeProgress();
+            analyzeProgress.SymbolicLink = new Progress<SymbolicLink>().OnChange((_, d)
+                => inputs.SymbolicLinks.Add(d));
+
+            CopyProgress copyProgress = BuildCopyProgress();
 
             lblPrg.Text = "Progress: ";
 
