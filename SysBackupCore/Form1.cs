@@ -218,16 +218,6 @@ namespace SysBackup
         }
 
         #region Analyze
-        private SharedProgress BuildSharedProgress()
-            => new() {
-                Status = new Progress<StatModel>().OnChange((_, d) => {
-                    lblStat.Text = d.Status;
-                    ControlsEnabled = !d.Working;
-                }),
-                Error = new Progress<IOErrorModel>().OnChange((_, d)
-                    => AddError(d.PathType.ToString(), d.Path, d.Error.ToString()))
-            };
-
         private CopyInput GetInputs() {
             lblStat.Text = "Status: processing...";
             ControlsEnabled = false;
@@ -267,6 +257,16 @@ namespace SysBackup
 
             return inputs;
         }
+
+        private SharedProgress BuildSharedProgress()
+            => new() {
+                Status = new Progress<StatModel>().OnChange((_, d) => {
+                    lblStat.Text = d.Status;
+                    ControlsEnabled = !d.Working;
+                }),
+                Error = new Progress<IOErrorModel>().OnChange((_, d)
+                    => AddError(d.PathType.ToString(), d.Path, d.Error.ToString()))
+            };
 
         private AnalyzeProgress BuildAnalyzeProgress()
             => new() {
