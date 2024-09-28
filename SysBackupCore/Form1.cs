@@ -288,7 +288,7 @@ namespace SysBackup
         #endregion //Analyze
 
         #region Copy
-         private async void btnCopy_Click(object sender, EventArgs e) {
+        private async void btnCopy_Click(object sender, EventArgs e) {
             if (lvDir.Items.Count < 1)
                 return;
 
