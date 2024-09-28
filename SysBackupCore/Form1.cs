@@ -208,10 +208,11 @@ namespace SysBackup
         }
         #endregion //Add/Ignore/Forget
 
-        private void AddErr(string ttl, string dir, string info) {
+        private void AddError(string ttl, string dir, string info) {
             ListViewItem ln = new([ttl, dir, info]);
             lvErr.Items.Add(ln);
         }
+
         private ListViewItem MakeLine(string ttl, string typ) {
             return new ListViewItem([ttl, typ]);
         }
@@ -224,7 +225,7 @@ namespace SysBackup
                     ControlsEnabled = !d.Working;
                 }),
                 Error = new Progress<IOErrorModel>().OnChange((_, d)
-                    => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString()))
+                    => AddError(d.PathType.ToString(), d.Path, d.Error.ToString()))
             };
 
         private CopyInput GetInputs() {
@@ -252,7 +253,7 @@ namespace SysBackup
                         continue;
                     }
                 } catch (Exception ex) {
-                    AddErr("Folder", directory, ex.ToString());
+                    AddError("Folder", directory, ex.ToString());
                     continue;
                 }
 
