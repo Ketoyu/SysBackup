@@ -52,28 +52,25 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="QuodLib.DateTimes">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.DateTimes\bin\Debug\net6.0\QuodLib.DateTimes.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.DateTimes\bin\Debug\net6.0\QuodLib.DateTimes.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.IO">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net7.0\QuodLib.IO.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.IO\bin\Debug\net7.0\QuodLib.IO.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.Linq">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Linq\bin\Debug\net7.0\QuodLib.Linq.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.Linq\bin\Debug\net7.0\QuodLib.Linq.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.Strings">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Strings\bin\Debug\net6.0\QuodLib.Strings.dll</HintPath>
-    </Reference>
-    <Reference Include="QuodLib.WinForms">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms\bin\Debug\net7.0-windows7.0\QuodLib.WinForms.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.Strings\bin\Debug\net6.0\QuodLib.Strings.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.WinForms.Drawing">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Drawing\bin\Debug\net7.0-windows\QuodLib.WinForms.Drawing.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.WinForms.Drawing\bin\Debug\net7.0-windows\QuodLib.WinForms.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.WinForms.IO">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.IO\bin\Debug\net7.0-windows7.0\QuodLib.WinForms.IO.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.WinForms.IO\bin\Debug\net7.0-windows7.0\QuodLib.WinForms.IO.dll</HintPath>
     </Reference>
     <Reference Include="QuodLib.WinForms.Linq">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.WinForms.Linq\bin\Debug\net7.0-windows\QuodLib.WinForms.Linq.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.WinForms.Linq\bin\Debug\net7.0-windows\QuodLib.WinForms.Linq.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

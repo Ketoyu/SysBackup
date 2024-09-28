@@ -8,10 +8,7 @@
 
   <ItemGroup>
     <Reference Include="QuodLib.IO">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.IO\bin\Debug\net7.0\QuodLib.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="QuodLib.Strings">
-      <HintPath>..\..\..\..\..\..\..\2022\C#\Projects\Libraries\QuodLib\QuodLib.Strings\bin\Debug\net6.0\QuodLib.Strings.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\QuodLib\QuodLib.IO\bin\Debug\net7.0\QuodLib.IO.dll</HintPath>
     </Reference>
   </ItemGroup>
 
