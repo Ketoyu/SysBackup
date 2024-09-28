@@ -285,7 +285,6 @@ namespace SysBackup
             return IO.AnalyzeAsync(inputs.Destination, inputs.Destination, inputs.Copy, inputs.Ignore, 
                 sharedProgress, analyzeProgress, new CancellationToken());
         }
-
         #endregion //Analyze
 
         #region Copy
