@@ -128,10 +128,12 @@ namespace SysBackup
         private void mnuImp_tlAppnd_Click(object sender, EventArgs e) {
             Import();
         }
+
         private void mnu_tlClr_Click(object sender, EventArgs e) {
             InputChanged();
             lvDir.Items.Clear();
         }
+
         private void Import() {
             using OpenFileDialog dialog = new() {
                 Title = "Select a backup preset",
@@ -191,6 +193,7 @@ namespace SysBackup
             InputChanged();
             lvDir.Items.Add(MakeLine($"+ {path!}", "Folder"));
         }
+
         private void btnDirIgnore_Click(object sender, EventArgs e) {
             using FolderBrowserDialog fld = new();
             if (!fld.TryBrowse(out string? path))
@@ -199,6 +202,7 @@ namespace SysBackup
             InputChanged();
             lvDir.Items.Add(MakeLine($"- {path!}", "Folder"));
         }
+
         private void btnDirForget_Click(object sender, EventArgs e) {
             if (lvDir.SelectedIndices.Count == 0)
                 return;
@@ -395,7 +399,6 @@ namespace SysBackup
                 MessageBox.Show(itm.SubItems[1] + "\r\n\r\n" + itm.SubItems[2]);
             }
         }
-
         #endregion //Post-Op
 
     } // </form>
