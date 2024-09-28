@@ -1,14 +1,11 @@
-﻿using QuodLib.IO.Symbolic;
-using QuodLib.IO.Models;
-using QuodLib.Strings;
-using QuodLib.IO;
-using System.Diagnostics;
-using System.Threading.Channels;
-using IOCL.Models;
+﻿using IOCL.Models;
 using IOCL.Progress;
+using QuodLib.IO;
+using QuodLib.IO.Models;
+using QuodLib.IO.Symbolic;
+using System.Diagnostics;
 
-namespace IOCL
-{
+namespace IOCL {
     public static class IO {
         /// <summary>
         /// Analyze and then immediately perform the backup.
@@ -24,8 +21,8 @@ namespace IOCL
         /// <param name="cancel"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static async Task<ResultStatus> CopyImmediateAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources, 
-            SharedProgress sharedProgress, AnalyzeProgress analyzeProgress, CopyProgress copyProgress, 
+        public static async Task<ResultStatus> CopyImmediateAsync(string destination, string commonPath, IList<string> sources, IList<string> skipSources,
+            SharedProgress sharedProgress, AnalyzeProgress analyzeProgress, CopyProgress copyProgress,
             CancellationToken cancel
         ) {
             if (!Directory.Exists(destination))
@@ -34,9 +31,9 @@ namespace IOCL
             if (!sources.Any())
                 throw new ArgumentException($"Empty list", nameof(sources));
 
-            Result<IOBulkOperation?> analysis = await AnalyzeAsync(destination, commonPath, 
-                sources, skipSources, 
-                sharedProgress, analyzeProgress, 
+            Result<IOBulkOperation?> analysis = await AnalyzeAsync(destination, commonPath,
+                sources, skipSources,
+                sharedProgress, analyzeProgress,
                 cancel
             );
 
@@ -58,7 +55,7 @@ namespace IOCL
         /// <param name="cancel"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static async Task<Result<IOBulkOperation?>> AnalyzeAsync(string destination, string commonPath, 
+        public static async Task<Result<IOBulkOperation?>> AnalyzeAsync(string destination, string commonPath,
             IList<string> sources, IList<string> skipSources,
             SharedProgress sharedProgress, AnalyzeProgress analyzeProgress,
             CancellationToken cancel
@@ -182,7 +179,7 @@ namespace IOCL
             if (cancel.IsCancellationRequested)
                 return null;
 
-            return new IOBulkOperation { 
+            return new IOBulkOperation {
                 Operations = copy,
                 Size = size,
                 Count = count
