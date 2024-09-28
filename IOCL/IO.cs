@@ -14,10 +14,9 @@ namespace IOCL {
         /// <param name="commonPath"></param>
         /// <param name="sources"></param>
         /// <param name="skipSources"></param>
-        /// <param name="status"></param>
-        /// <param name="progress"></param>
-        /// <param name="symbolicLink"></param>
-        /// <param name="error"></param>
+        /// <param name="sharedProgress"></param>
+        /// <param name="analyzeProgress"></param>
+        /// <param name="copyProgress"></param>
         /// <param name="cancel"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
@@ -96,7 +95,6 @@ namespace IOCL {
         /// <param name="analysis"></param>
         /// <param name="sharedProgress"></param>
         /// <param name="copyProgress"></param>
-        /// <param name="error"></param>
         /// <param name="cancel"></param>
         /// <returns></returns>
         public static async Task<ResultStatus> CopyAsync(IOBulkOperation analysis, SharedProgress sharedProgress, CopyProgress copyProgress,
