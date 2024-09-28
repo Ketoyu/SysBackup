@@ -46,23 +46,25 @@ namespace SysBackup
             public List<SymbolicLink> SymbolicLinks { get; } = [];
         }
 
-        readonly Color CLR_T_NORM = cG.CColor(58, 136, 198);
-        readonly Color CLR_C_NORM = cG.MColor(31);
-        readonly Color CLR_C_DIS = cG.CColor(130, 135, 144);
-        readonly Color CLR_B_NORM = cG.MColor(47);
+        #region Readonly Fields
+        static readonly Color CLR_T_NORM = cG.CColor(58, 136, 198);
+        static readonly Color CLR_C_NORM = cG.MColor(31);
+        static readonly Color CLR_C_DIS = cG.CColor(130, 135, 144);
+        static readonly Color CLR_B_NORM = cG.MColor(47);
 
-        readonly Color CLR_FLD_T_NORM = cG.CColor(58, 136, 198);
-        readonly Color CLR_FLD_T_ERR = cG.CColor(58, 136, 198);
-        readonly Color CLR_FLD_B_NORM = cG.MColor(39);
-        readonly Color CLR_FLD_B_ERR = cG.CColor(81, 31, 31);
+        static readonly Color CLR_FLD_T_NORM = cG.CColor(58, 136, 198);
+        static readonly Color CLR_FLD_T_ERR = cG.CColor(58, 136, 198);
+        static readonly Color CLR_FLD_B_NORM = cG.MColor(39);
+        static readonly Color CLR_FLD_B_ERR = cG.CColor(81, 31, 31);
 
-        readonly Color CLR_FL_T_NORM = cG.CColor(58, 136, 198);
-        readonly Color CLR_FL_T_ERR = cG.CColor(58, 136, 198);
-        readonly Color CLR_FL_B_NORM = cG.MColor(31);
-        readonly Color CLR_FL_B_ERR = cG.CColor(57, 27, 27);
+        static readonly Color CLR_FL_T_NORM = cG.CColor(58, 136, 198);
+        static readonly Color CLR_FL_T_ERR = cG.CColor(58, 136, 198);
+        static readonly Color CLR_FL_B_NORM = cG.MColor(31);
+        static readonly Color CLR_FL_B_ERR = cG.CColor(57, 27, 27);
 
         static readonly string DIR_DOC = Directories.Special.Documents + @"\CodeGig\SysBackup";
-        readonly string DIR_IMP_EXP = DIR_DOC + @"\Presets";
+        static readonly string DIR_IMP_EXP = DIR_DOC + @"\Presets";
+        #endregion Readonly Fields
 
         private CancellationToken? Cancel { get; set; }
 
