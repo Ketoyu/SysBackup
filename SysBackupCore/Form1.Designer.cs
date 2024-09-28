@@ -35,9 +35,9 @@
             lvDir = new System.Windows.Forms.ListView();
             clmTtl = new System.Windows.Forms.ColumnHeader();
             clmTyp = new System.Windows.Forms.ColumnHeader();
-            btnDir_Inc = new System.Windows.Forms.Button();
-            btnDir_Forget = new System.Windows.Forms.Button();
-            btnDir_Dsc = new System.Windows.Forms.Button();
+            btnDirAdd = new System.Windows.Forms.Button();
+            btnDirForget = new System.Windows.Forms.Button();
+            btnDirIgnore = new System.Windows.Forms.Button();
             mnuMn = new System.Windows.Forms.MenuStrip();
             backupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             mnu_SlImp = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,11 +49,11 @@
             lblStat = new System.Windows.Forms.Label();
             txtDirBak = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
-            btnDirBak = new System.Windows.Forms.Button();
+            btnDirTo = new System.Windows.Forms.Button();
             lblPrg = new System.Windows.Forms.Label();
-            txtPathIgnore = new System.Windows.Forms.TextBox();
+            txtPathCommon = new System.Windows.Forms.TextBox();
             label4 = new System.Windows.Forms.Label();
-            btnPathIgnore = new System.Windows.Forms.Button();
+            btnPathCommon = new System.Windows.Forms.Button();
             mnuMn.SuspendLayout();
             SuspendLayout();
             // 
@@ -135,41 +135,41 @@
             clmTyp.Text = "Type";
             clmTyp.Width = 45;
             // 
-            // btnDir_Inc
+            // btnDirAdd
             // 
-            btnDir_Inc.BackColor = System.Drawing.SystemColors.Control;
-            btnDir_Inc.Location = new System.Drawing.Point(89, 87);
-            btnDir_Inc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnDir_Inc.Name = "btnDir_Inc";
-            btnDir_Inc.Size = new System.Drawing.Size(27, 27);
-            btnDir_Inc.TabIndex = 12;
-            btnDir_Inc.Text = "+";
-            btnDir_Inc.UseVisualStyleBackColor = false;
-            btnDir_Inc.Click += btnDir_Inc_Click;
+            btnDirAdd.BackColor = System.Drawing.SystemColors.Control;
+            btnDirAdd.Location = new System.Drawing.Point(89, 87);
+            btnDirAdd.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnDirAdd.Name = "btnDirAdd";
+            btnDirAdd.Size = new System.Drawing.Size(27, 27);
+            btnDirAdd.TabIndex = 12;
+            btnDirAdd.Text = "+";
+            btnDirAdd.UseVisualStyleBackColor = false;
+            btnDirAdd.Click += btnDirAdd_Click;
             // 
-            // btnDir_Forget
+            // btnDirForget
             // 
-            btnDir_Forget.BackColor = System.Drawing.SystemColors.Control;
-            btnDir_Forget.Location = new System.Drawing.Point(433, 87);
-            btnDir_Forget.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnDir_Forget.Name = "btnDir_Forget";
-            btnDir_Forget.Size = new System.Drawing.Size(38, 27);
-            btnDir_Forget.TabIndex = 13;
-            btnDir_Forget.Text = "Del";
-            btnDir_Forget.UseVisualStyleBackColor = false;
-            btnDir_Forget.Click += btnDir_Forget_Click;
+            btnDirForget.BackColor = System.Drawing.SystemColors.Control;
+            btnDirForget.Location = new System.Drawing.Point(433, 87);
+            btnDirForget.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnDirForget.Name = "btnDirForget";
+            btnDirForget.Size = new System.Drawing.Size(38, 27);
+            btnDirForget.TabIndex = 13;
+            btnDirForget.Text = "Del";
+            btnDirForget.UseVisualStyleBackColor = false;
+            btnDirForget.Click += btnDirForget_Click;
             // 
-            // btnDir_Dsc
+            // btnDirIgnore
             // 
-            btnDir_Dsc.BackColor = System.Drawing.SystemColors.Control;
-            btnDir_Dsc.Location = new System.Drawing.Point(122, 87);
-            btnDir_Dsc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnDir_Dsc.Name = "btnDir_Dsc";
-            btnDir_Dsc.Size = new System.Drawing.Size(27, 27);
-            btnDir_Dsc.TabIndex = 14;
-            btnDir_Dsc.Text = "-";
-            btnDir_Dsc.UseVisualStyleBackColor = false;
-            btnDir_Dsc.Click += btnDir_Dsc_Click;
+            btnDirIgnore.BackColor = System.Drawing.SystemColors.Control;
+            btnDirIgnore.Location = new System.Drawing.Point(122, 87);
+            btnDirIgnore.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnDirIgnore.Name = "btnDirIgnore";
+            btnDirIgnore.Size = new System.Drawing.Size(27, 27);
+            btnDirIgnore.TabIndex = 14;
+            btnDirIgnore.Text = "-";
+            btnDirIgnore.UseVisualStyleBackColor = false;
+            btnDirIgnore.Click += btnDirIgnore_Click;
             // 
             // mnuMn
             // 
@@ -279,17 +279,17 @@
             label3.TabIndex = 19;
             label3.Text = "To:";
             // 
-            // btnDirBak
+            // btnDirTo
             // 
-            btnDirBak.BackColor = System.Drawing.SystemColors.Control;
-            btnDirBak.Location = new System.Drawing.Point(433, 0);
-            btnDirBak.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnDirBak.Name = "btnDirBak";
-            btnDirBak.Size = new System.Drawing.Size(47, 27);
-            btnDirBak.TabIndex = 20;
-            btnDirBak.Text = ". . .";
-            btnDirBak.UseVisualStyleBackColor = false;
-            btnDirBak.Click += btnDirBak_Click;
+            btnDirTo.BackColor = System.Drawing.SystemColors.Control;
+            btnDirTo.Location = new System.Drawing.Point(433, 0);
+            btnDirTo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnDirTo.Name = "btnDirTo";
+            btnDirTo.Size = new System.Drawing.Size(47, 27);
+            btnDirTo.TabIndex = 20;
+            btnDirTo.Text = ". . .";
+            btnDirTo.UseVisualStyleBackColor = false;
+            btnDirTo.Click += btnDirTo_Click;
             // 
             // lblPrg
             // 
@@ -302,13 +302,13 @@
             lblPrg.TabIndex = 21;
             lblPrg.Text = "Progress:";
             // 
-            // txtPathIgnore
+            // txtPathCommon
             // 
-            txtPathIgnore.Location = new System.Drawing.Point(162, 31);
-            txtPathIgnore.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            txtPathIgnore.Name = "txtPathIgnore";
-            txtPathIgnore.Size = new System.Drawing.Size(263, 23);
-            txtPathIgnore.TabIndex = 22;
+            txtPathCommon.Location = new System.Drawing.Point(162, 31);
+            txtPathCommon.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            txtPathCommon.Name = "txtPathCommon";
+            txtPathCommon.Size = new System.Drawing.Size(263, 23);
+            txtPathCommon.TabIndex = 22;
             // 
             // label4
             // 
@@ -322,17 +322,17 @@
             label4.TabIndex = 23;
             label4.Text = "Ignore common path:";
             // 
-            // btnPathIgnore
+            // btnPathCommon
             // 
-            btnPathIgnore.BackColor = System.Drawing.SystemColors.Control;
-            btnPathIgnore.Location = new System.Drawing.Point(433, 28);
-            btnPathIgnore.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            btnPathIgnore.Name = "btnPathIgnore";
-            btnPathIgnore.Size = new System.Drawing.Size(47, 27);
-            btnPathIgnore.TabIndex = 24;
-            btnPathIgnore.Text = "Auto";
-            btnPathIgnore.UseVisualStyleBackColor = false;
-            btnPathIgnore.Click += btnPathIgnore_Click;
+            btnPathCommon.BackColor = System.Drawing.SystemColors.Control;
+            btnPathCommon.Location = new System.Drawing.Point(433, 28);
+            btnPathCommon.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnPathCommon.Name = "btnPathCommon";
+            btnPathCommon.Size = new System.Drawing.Size(47, 27);
+            btnPathCommon.TabIndex = 24;
+            btnPathCommon.Text = "Auto";
+            btnPathCommon.UseVisualStyleBackColor = false;
+            btnPathCommon.Click += btnPathCommon_Click;
             // 
             // Form1
             // 
@@ -340,18 +340,18 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(47, 47, 47);
             ClientSize = new System.Drawing.Size(481, 726);
-            Controls.Add(btnPathIgnore);
-            Controls.Add(txtPathIgnore);
+            Controls.Add(btnPathCommon);
+            Controls.Add(txtPathCommon);
             Controls.Add(label4);
             Controls.Add(lblPrg);
-            Controls.Add(btnDirBak);
+            Controls.Add(btnDirTo);
             Controls.Add(txtDirBak);
             Controls.Add(label3);
             Controls.Add(lblStat);
             Controls.Add(btnCopy);
-            Controls.Add(btnDir_Dsc);
-            Controls.Add(btnDir_Forget);
-            Controls.Add(btnDir_Inc);
+            Controls.Add(btnDirIgnore);
+            Controls.Add(btnDirForget);
+            Controls.Add(btnDirAdd);
             Controls.Add(lvDir);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -381,9 +381,9 @@
 		private System.Windows.Forms.ListView lvDir;
 		private System.Windows.Forms.ColumnHeader clmTtl;
 		private System.Windows.Forms.ColumnHeader clmTyp;
-		private System.Windows.Forms.Button btnDir_Inc;
-		private System.Windows.Forms.Button btnDir_Forget;
-		private System.Windows.Forms.Button btnDir_Dsc;
+		private System.Windows.Forms.Button btnDirAdd;
+		private System.Windows.Forms.Button btnDirForget;
+		private System.Windows.Forms.Button btnDirIgnore;
 		private System.Windows.Forms.MenuStrip mnuMn;
 		private System.Windows.Forms.ToolStripMenuItem backupsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnu_SlImp;
@@ -395,11 +395,11 @@
         private System.Windows.Forms.ToolStripMenuItem mnu_tlClr;
         private System.Windows.Forms.TextBox txtDirBak;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btnDirBak;
+        private System.Windows.Forms.Button btnDirTo;
         private System.Windows.Forms.Label lblPrg;
-        private System.Windows.Forms.TextBox txtPathIgnore;
+        private System.Windows.Forms.TextBox txtPathCommon;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button btnPathIgnore;
+        private System.Windows.Forms.Button btnPathCommon;
     }
 }
 

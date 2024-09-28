@@ -33,6 +33,17 @@ namespace SysBackup
     public partial class Form1 : Form {
         public Form1() {
             InitializeComponent();
+
+            txtDirBak.TextChanged += (_, _) => InputChanged();
+            txtPathCommon.TextChanged += (_, _) => InputChanged();
+        }
+
+        private class CopyInput {
+            public required string Destination { get; init; }
+            public required string IgnorePath { get; init; }
+            public List<string> Copy { get; }  = [];
+            public List<string> Ignore { get; } = [];
+            public List<SymbolicLink> SymbolicLinks { get; } = [];
         }
 
         readonly Color CLR_T_NORM = cG.CColor(58, 136, 198);
@@ -55,34 +66,43 @@ namespace SysBackup
 
         private CancellationToken? Cancel { get; set; }
 
+        private bool CopyReady {
+            get => btnCopy.Enabled;
+            set => btnCopy.Enabled = value;
+        }
+
+        private bool _controlsEnabled = true;
+        private bool ControlsEnabled {
+            get => _controlsEnabled;
+            set {
+                if (_controlsEnabled == value)
+                    return;
+
+                btnCopy.Enabled = value;
+                btnDirTo.Enabled = value;
+
+                btnDirAdd.Enabled = value;
+                btnDirIgnore.Enabled = value;
+                btnDirForget.Enabled = value;
+
+                backupsToolStripMenuItem.Enabled = value;
+
+                txtPathCommon.ReadOnly = !value;
+                btnPathCommon.Enabled = value;
+
+                _controlsEnabled = value;
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e) {
             Directory.CreateDirectory(DIR_IMP_EXP);
         }
 
-        private void btnDir_Inc_Click(object sender, EventArgs e) {
-            using FolderBrowserDialog fld = new();
-            if (fld.TryBrowse(out string? path))
-                lvDir.Items.Add(MakeLine($"+ {path!}", "Folder"));
-        }
-        private void btnDir_Dsc_Click(object sender, EventArgs e) {
-            using FolderBrowserDialog fld = new();
-            if (fld.TryBrowse(out string? path))
-                lvDir.Items.Add(MakeLine($"- {path!}", "Folder"));
-        }
-        private void btnDir_Forget_Click(object sender, EventArgs e) {
-            if (lvDir.SelectedIndices.Count > 0)
-                lvDir.Items.RemoveAt(lvDir.SelectedIndices[0]);
+        private void InputChanged() {
+            CopyReady = false;
         }
 
-        private void AddErr(string ttl, string dir, string info) {
-            ListViewItem ln = new([ttl, dir, info]);
-            lvErr.Items.Add(ln);
-        }
-        private ListViewItem MakeLine(string ttl, string typ) {
-            return new ListViewItem([ttl, typ]);
-        }
-
+        #region Menu
         private void mnu_tlExp_Click(object sender, EventArgs e) {
             using SaveFileDialog dialog = new() {
                 Title = "Select a backup preset",
@@ -109,6 +129,7 @@ namespace SysBackup
             Import();
         }
         private void mnu_tlClr_Click(object sender, EventArgs e) {
+            InputChanged();
             lvDir.Items.Clear();
         }
         private void Import() {
@@ -120,52 +141,22 @@ namespace SysBackup
             if (!dialog.TryBrowse(out string? file))
                 return;
 
+            InputChanged();
             foreach (string ln in File.ReadAllText(file!).GetLines())
                 lvDir.Items.Add(MakeLine(ln, "Folder"));
         }
+        #endregion //Menu
 
-        private void btnDirBak_Click(object sender, EventArgs e) {
+        private void btnDirTo_Click(object sender, EventArgs e) {
             using FolderBrowserDialog fld = new();
-            if (fld.TryBrowse(out string? path))
-                txtDirBak.Text = path!;
-        }
-
-        private void lvErr_MouseDoubleClick(object sender, MouseEventArgs e) {
-            if (lvErr.SelectedIndices[0] > 0) {
-                ListViewItem itm = lvErr.SelectedItems[0];
-                MessageBox.Show(itm.SubItems[1] + "\r\n\r\n" + itm.SubItems[2]);
-            }
-        }
-
-        private void Controls_SetEnabled(bool value) {
-            btnCopy.Enabled = value;
-            btnDirBak.Enabled = value;
-
-            btnDir_Inc.Enabled = value;
-            btnDir_Dsc.Enabled = value;
-            btnDir_Forget.Enabled = value;
-
-            backupsToolStripMenuItem.Enabled = value;
-
-            txtPathIgnore.ReadOnly = !value;
-            btnPathIgnore.Enabled = value;
-        }
-        private async void btnCopy_Click(object sender, EventArgs e) {
-            if (lvDir.Items.Count < 1)
+            if (!fld.TryBrowse(out string? path))
                 return;
 
-            if (txtDirBak.Text.Length > 0 && (
-                string.IsNullOrEmpty(txtPathIgnore.Text) ||
-                !lvDir.Items
-                    .ToEnumerable()
-                    .Select(i => i.SubItems[0].Text)
-                    .All(s => s.StartsWith(txtPathIgnore.Text))
-            )) {
-                await DoCopyAsync();
-            }
+            InputChanged();
+            txtDirBak.Text = path!;
         }
 
-        private void btnPathIgnore_Click(object sender, EventArgs e) {
+        private void btnPathCommon_Click(object sender, EventArgs e) {
             if (lvDir.Items.Count == 0)
                 return;
 
@@ -175,29 +166,70 @@ namespace SysBackup
                 .ToKnownList(lvDir.Items.Count);
 
             if (items.Count == 1) {
-                txtPathIgnore.Text = items.First().FromIndex(2);
+                txtPathCommon.Text = items.First().FromIndex(2);
                 return;
             }
 
             int? index = Query.IndexOfDivergence(items);
-            if (index == null || index < 0)
-                txtPathIgnore.Text = string.Empty;
-            else
-                txtPathIgnore.Text = items.First().TowardIndex((int)index!);
+            string newText = index == null || index < 0
+                ? string.Empty
+                : items.First().TowardIndex((int)index!);
+
+            if (newText.Equals(txtPathCommon.Text, StringComparison.CurrentCultureIgnoreCase))
+                return;
+
+            InputChanged();
+            txtPathCommon.Text = newText;
         }
 
-        private class CopyInput {
-            public required string Destination { get; init; }
-            public required string IgnorePath { get; init; }
-            public List<string> Copy { get; }  = [];
-            public List<string> Ignore { get; } = [];
-            public List<SymbolicLink> SymbolicLinks { get; } = [];
+        #region Add/Ignore/Forget
+        private void btnDirAdd_Click(object sender, EventArgs e) {
+            using FolderBrowserDialog fld = new();
+            if (!fld.TryBrowse(out string? path))
+                return;
+
+            InputChanged();
+            lvDir.Items.Add(MakeLine($"+ {path!}", "Folder"));
+        }
+        private void btnDirIgnore_Click(object sender, EventArgs e) {
+            using FolderBrowserDialog fld = new();
+            if (!fld.TryBrowse(out string? path))
+                return;
+
+            InputChanged();
+            lvDir.Items.Add(MakeLine($"- {path!}", "Folder"));
+        }
+        private void btnDirForget_Click(object sender, EventArgs e) {
+            if (lvDir.SelectedIndices.Count == 0)
+                return;
+
+            InputChanged();
+            lvDir.Items.RemoveAt(lvDir.SelectedIndices[0]);
+        }
+        #endregion //Add/Ignore/Forget
+
+        private void AddErr(string ttl, string dir, string info) {
+            ListViewItem ln = new([ttl, dir, info]);
+            lvErr.Items.Add(ln);
+        }
+        private ListViewItem MakeLine(string ttl, string typ) {
+            return new ListViewItem([ttl, typ]);
         }
 
+        #region Analyze
+        private SharedProgress BuildSharedProgress()
+            => new() {
+                Status = new Progress<StatModel>().OnChange((_, d) => {
+                    lblStat.Text = d.Status;
+                    ControlsEnabled = !d.Working;
+                }),
+                Error = new Progress<IOErrorModel>().OnChange((_, d)
+                    => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString()))
+            };
 
         private CopyInput GetInputs() {
             lblStat.Text = "Status: processing...";
-            Controls_SetEnabled(false);
+            ControlsEnabled = false;
 
             lvErr.Items.Clear();
 
@@ -205,7 +237,7 @@ namespace SysBackup
 
             CopyInput inputs = new() {
                 Destination = txtDirBak.Text,
-                IgnorePath = txtPathIgnore.Text
+                IgnorePath = txtPathCommon.Text
             };
 
             foreach (string item in lvDir.Items
@@ -235,27 +267,10 @@ namespace SysBackup
             return inputs;
         }
 
-        private SharedProgress BuildSharedProgress()
-            => new() {
-                Status = new Progress<StatModel>().OnChange((_, d) => {
-                    lblStat.Text = d.Status;
-                    Controls_SetEnabled(!d.Working);
-                }),
-                Error = new Progress<IOErrorModel>().OnChange((_, d)
-                    => AddErr(d.PathType.ToString(), d.Path, d.Error.ToString()))
-            };
-
         private AnalyzeProgress BuildAnalyzeProgress()
             => new() {
                 Details = new Progress<IOProgressModel>().OnChange((_, d) => {
                     lblPrg.Text = $"Progress: _% (_/{d.SourceBytes}) | (_ of {d.SourceCount.ToCommaString()} files)";
-                })
-            };
-
-        private CopyProgress BuildCopyProgress()
-            => new() {
-                Details = new Progress<IOProgressModel>().OnChange((_, d) => {
-                    lblPrg.Text = $"Progress: {d.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
                 })
             };
 
@@ -269,6 +284,31 @@ namespace SysBackup
             return IO.AnalyzeAsync(inputs.Destination, inputs.Destination, inputs.Copy, inputs.Ignore, 
                 sharedProgress, analyzeProgress, new CancellationToken());
         }
+
+        #endregion //Analyze
+
+        #region Copy
+         private async void btnCopy_Click(object sender, EventArgs e) {
+            if (lvDir.Items.Count < 1)
+                return;
+
+            if (txtDirBak.Text.Length > 0 && (
+                string.IsNullOrEmpty(txtPathCommon.Text) ||
+                !lvDir.Items
+                    .ToEnumerable()
+                    .Select(i => i.SubItems[0].Text)
+                    .All(s => s.StartsWith(txtPathCommon.Text))
+            )) {
+                await DoCopyAsync();
+            }
+        }
+
+        private CopyProgress BuildCopyProgress()
+            => new() {
+                Details = new Progress<IOProgressModel>().OnChange((_, d) => {
+                    lblPrg.Text = $"Progress: {d.SizePercent}% ({d.CurrentBytes}/{d.SourceBytes}) | ({d.CurrentCount.ToCommaString()} of {d.SourceCount.ToCommaString()} files)";
+                })
+            };
 
         private async Task DoCopyAsync(CopyInput inputs, IOBulkOperation operations, SharedProgress sharedProgress) {
             CopyProgress copyProgress = BuildCopyProgress();
@@ -299,7 +339,9 @@ namespace SysBackup
 
             Complete(inputs.Destination, inputs.SymbolicLinks);
         }
+        #endregion //Copy
 
+        #region Post-Op
         void Complete(string destination, List<SymbolicLink> symbolicLinks) {
             if (lvErr.Items.Count > 0) {
                 lblStat.Text = "Status: exporting errors...";
@@ -336,7 +378,7 @@ namespace SysBackup
             lblStat.Text = "Status: complete.";
             Console.Beep();
             MessageBox.Show("Complete.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Controls_SetEnabled(true);
+            ControlsEnabled = true;
 
             //---- (local methods) ----
 
@@ -346,6 +388,15 @@ namespace SysBackup
             static string timestamp()
                 => classDatetime.Date_ToString(DateTime.Now, 5, false);
         }
+
+        private void lvErr_MouseDoubleClick(object sender, MouseEventArgs e) {
+            if (lvErr.SelectedIndices[0] > 0) {
+                ListViewItem itm = lvErr.SelectedItems[0];
+                MessageBox.Show(itm.SubItems[1] + "\r\n\r\n" + itm.SubItems[2]);
+            }
+        }
+
+        #endregion //Post-Op
 
     } // </form>
 }
